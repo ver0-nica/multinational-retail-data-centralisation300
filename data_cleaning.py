@@ -21,32 +21,54 @@ class DataCleaning:
         db = db.dropna()
         return db        
     
-    def clean_card_data(self, data):
-        pd.to_datetime(data.date_payment_confirmed, format='mixed', errors='coerce')
-        pd.to_datetime(data.expiry_date, format='mixed', errors='coerce')
-        data = data.dropna()
-        return data
+    def clean_card_data(self, card_df):
+        pd.to_datetime(card_df.date_payment_confirmed, format='mixed', errors='coerce')
+        pd.to_datetime(card_df.expiry_date, format='mixed', errors='coerce')
+        card_df = card_df.dropna()
+        return card_df
     
-    def clean_store_data(self,data):
-        data['address'] = data['address'].replace({r'\n':', '}, regex=True)
-        pd.to_datetime(data.opening_date, format='mixed', errors='coerce')
-        data = data.dropna()
-        return data
+    def clean_store_data(self,store_df):
+        store_df['address'] = store_df['address'].replace({r'\n':', '}, regex=True)
+        pd.to_numeric(store_df.longitude, errors='coerce')
+        pd.to_numeric(store_df.lat, errors='coerce')
+        pd.to_numeric(store_df.latitude, errors='coerce')
+        pd.to_numeric(store_df.staff_numbers, errors='coerce')
+        pd.to_datetime(store_df.opening_date, errors='coerce')
+        store_df = store_df.dropna()
+        return store_df
     
-    def convert_products_weight(self, products_dataframe):
-        #digits = [1,2,3,4,5,6,7,8,9]
-        products_dataframe['weight'].dropna()
-        for item in products_dataframe['weight']:
-            print(len(item))
-            #for i in range(len(item)):
-                #if item[i] not in digits:
-                    #item.split(item[i])
-        return products_dataframe
+    def convert_products_weight(self, products_df):
+        products_df['weight'].dropna()   
+        for item in products_df['weight']:
+            item = str(item)  
 
-    def clean_products_data(self, products_dataframe):
-        pd.to_datetime(products_dataframe.date_added, format='mixed', errors='coerce')
-        products_dataframe = products_dataframe.dropna()
-        return products_dataframe
+        for item in products_df['weight']:
+            
+            if item == float:
+                item = None
+            elif 'kg' in item:
+                index = item.index('k')
+                item = item[:index]
+                item = float(item)
+            elif 'g' in item:
+                index = item.index('g')
+                item = item[:index]
+                item = float(item)
+                item = item / 1000
+            elif 'ml' in item:
+                index = item.index('m')
+                item = item[:index]
+                item = float(item)
+                item = item / 1000
+        
+        products_df['weight'].dropna() 
+        
+        return products_df
+
+    def clean_products_data(self, products_df):
+        pd.to_datetime(products_df.date_added, format='mixed', errors='coerce')
+        products_df = products_df.dropna()
+        return products_df
     
     def clean_orders_data(self, orders_df):
         orders_df.dropna(inplace=True)

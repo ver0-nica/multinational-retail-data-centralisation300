@@ -8,12 +8,11 @@ class DataExtractor:
     def read_rds_table(self, connector, table_name):
         tables = connector.list_db_tables()
         index = tables.index(table_name)
-        table_name = tables[index]
-        df = pd.read_sql_table(table_name, connector.init_db_engine())
+        df = pd.read_sql_table(tables[index], connector.init_db_engine())
         return df
     
-    def retrieve_pdf_data(self, link):
-        pdf_data = tabula.read_pdf(link, force_subprocess=True, multiple_tables=True, pages="all", lattice=True) #create a file to be uploaded on a Pandas DataFrame
+    def retrieve_pdf_data(self, url):
+        pdf_data = tabula.read_pdf(url, force_subprocess=True, multiple_tables=True, pages="all", lattice=True) #create a file to be uploaded on a Pandas DataFrame
         df = pd.concat(pdf_data) #upload the file on a pandas dataframe
         return df
 
@@ -38,7 +37,7 @@ class DataExtractor:
 
     def extract_from_s3(self, address):
         s3 = boto3.client('s3')
-        df = pd.read_json(address)
+        df = pd.read_csv(address)
         return df
 
 
