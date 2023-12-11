@@ -22,44 +22,90 @@ class DataCleaning:
         return db        
     
     def clean_card_data(self, card_df):
+        unique_values = ['Diners Club / Carte Blanche', 'American Express', 'JCB 16 digit', 'JCB 15 digit', 'Maestro', 'Mastercard', 'Discover', 'VISA 19 digit', 'VISA 16 digit', 'VISA 13 digit']
+        card_df = card_df[card_df['card_provider'].isin(unique_values)]
+        
         pd.to_datetime(card_df.date_payment_confirmed, format='mixed', errors='coerce')
         pd.to_datetime(card_df.expiry_date, format='mixed', errors='coerce')
         card_df = card_df.dropna()
         return card_df
     
     def clean_store_data(self,store_df):
+        unique_values = ['Local', 'Outlet', 'Mall Kiosk', 'Super Store']
+        store_df = store_df[store_df['store_type'].isin(unique_values)]
+
         store_df['address'] = store_df['address'].replace({r'\n':', '}, regex=True)
-        pd.to_numeric(store_df.longitude, errors='coerce')
-        pd.to_numeric(store_df.lat, errors='coerce')
-        pd.to_numeric(store_df.latitude, errors='coerce')
-        pd.to_numeric(store_df.staff_numbers, errors='coerce')
+    
         pd.to_datetime(store_df.opening_date, errors='coerce')
-        store_df = store_df.dropna()
         return store_df
     
     def convert_products_weight(self, products_df):
-        products_df['weight'].dropna()   
-        for item in products_df['weight']:
-            item = str(item)  
+       
+        unique_values = ['food-and-drink', 'toys-and-games', 'homeware', 'sports-and-leisure', 'diy', 'pets', 'health-and-beauty']
+        products_df = products_df[products_df['category'].isin(unique_values)]
+
+        products_df['weight'].dropna()
 
         for item in products_df['weight']:
-            
-            if item == float:
-                item = None
-            elif 'kg' in item:
+               
+            if 'kg' in item:
                 index = item.index('k')
-                item = item[:index]
-                item = float(item)
+                new_item = item[:index]
+                if 'x' in new_item:
+                    x_index=new_item.index('x')
+                    a = new_item[:x_index]
+                    b = new_item[x_index+1:]
+                    a = float(a)
+                    b = float(b)
+                    new_item = a * b 
+                new_item = float(new_item)    
+                products_df['weight'] = products_df['weight'].replace(item, new_item, regex=True)
+                
             elif 'g' in item:
                 index = item.index('g')
                 item = item[:index]
-                item = float(item)
-                item = item / 1000
+                new_item = item[:index]
+                if 'x' in new_item:
+                    x_index=new_item.index('x')
+                    a = new_item[:x_index]
+                    b = new_item[x_index+1:]
+                    a = float(a)
+                    b = float(b)
+                    new_item = a * b 
+
+                new_item = float(new_item)
+                new_item = new_item / 1000
+                products_df['weight'] = products_df['weight'].replace(item, new_item, regex=True)
+
             elif 'ml' in item:
-                index = item.index('m')
-                item = item[:index]
-                item = float(item)
-                item = item / 1000
+                index= item.index('m')
+                new_item = item[:index]
+                if 'x' in new_item:
+                    x_index=new_item.index('x')
+                    a = new_item[:x_index]
+                    b = new_item[x_index+1:]
+                    a = float(a)
+                    b = float(b)
+                    new_item = a * b 
+                
+                new_item = float(new_item)
+                new_item = new_item / 1000                
+                products_df['weight'] = products_df['weight'].replace(item, new_item, regex=True)
+
+            elif 'oz' in item:
+                index= item.index('o')
+                new_item = item[:index]
+                if 'x' in new_item:
+                    x_index=new_item.index('x')
+                    a = new_item[:x_index]
+                    b = new_item[x_index+1:]
+                    a = float(a)
+                    b = float(b)
+                    new_item = a * b 
+                
+                new_item = float(new_item)
+                new_item = new_item / 35                
+                products_df['weight'] = products_df['weight'].replace(item, new_item, regex=True)
         
         products_df['weight'].dropna() 
         
@@ -83,6 +129,7 @@ class DataCleaning:
     def clean_date_data(self,date_df):
         date_df.dropna(inplace=True)
         date_df.drop_duplicates(inplace=True)
+        
         pd.to_timedelta(date_df.timestamp, errors='coerce')
         pd.to_numeric(date_df.month, errors='coerce')
         pd.to_numeric(date_df.year, errors='coerce')
