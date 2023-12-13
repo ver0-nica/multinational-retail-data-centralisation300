@@ -41,12 +41,12 @@ my_connector = DatabaseConnector(my_filepath)
 #print(stores_dataframe_cleaned['longitude'], stores_dataframe_cleaned['lat'], stores_dataframe_cleaned['latitude'], stores_dataframe_cleaned['staff_numbers'])
 #my_connector.upload_to_db(stores_dataframe_cleaned, 'dim_store_details')
 
-products_address = 's3://data-handling-public/products.csv'
-products_dataframe = extractor.extract_from_s3(products_address)
-products_dataframe = cleaner.convert_products_weight(products_dataframe)
+#products_address = 's3://data-handling-public/products.csv'
+#products_dataframe = extractor.extract_from_s3(products_address)
+#products_dataframe = cleaner.convert_products_weight(products_dataframe)
 #print(set(products_dataframe['weight']))
-products_dataframe = cleaner.clean_products_data(products_dataframe)
-my_connector.upload_to_db(products_dataframe, 'dim_products')
+#products_dataframe = cleaner.clean_products_data(products_dataframe)
+#my_connector.upload_to_db(products_dataframe, 'dim_products')
 
 #print(connector.list_db_tables())
 #orders_df = extractor.read_rds_table(connector, 'orders_table')
@@ -54,8 +54,8 @@ my_connector.upload_to_db(products_dataframe, 'dim_products')
 #print(orders_df)
 #my_connector.upload_to_db(orders_df, 'orders_table')
 
-#date_address = 'https://data-handling-public.s3.eu-west-1.amazonaws.com/date_details.json'
-#date_dataframe = pd.read_json(date_address)
-#date_dataframe = cleaner.clean_date_data(date_dataframe)
-#my_connector.upload_to_db(date_dataframe, 'dim_date_times')
+date_address = 'https://data-handling-public.s3.eu-west-1.amazonaws.com/date_details.json'
+date_dataframe = pd.read_json(date_address)
+date_dataframe = cleaner.clean_date_data(date_dataframe)
+my_connector.upload_to_db(date_dataframe, 'dim_date_times')
 

@@ -129,9 +129,13 @@ class DataCleaning:
     def clean_date_data(self,date_df):
         date_df.dropna(inplace=True)
         date_df.drop_duplicates(inplace=True)
+
+        pd.to_numeric(date_df.month, errors='coerce')
+        unique_values = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+        date_df = date_df[date_df['month'].isin(unique_values)]
         
         pd.to_timedelta(date_df.timestamp, errors='coerce')
-        pd.to_numeric(date_df.month, errors='coerce')
+        
         pd.to_numeric(date_df.year, errors='coerce')
         pd.to_numeric(date_df.day, errors='coerce')
         date_df.dropna(inplace=True)
