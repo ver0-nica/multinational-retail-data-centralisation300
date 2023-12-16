@@ -35,8 +35,27 @@ class DataCleaning:
         store_df = store_df[store_df['store_type'].isin(unique_values)]
 
         store_df['address'] = store_df['address'].replace({r'\n':', '}, regex=True)
+
+        digits = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+        for item in store_df['staff_numbers']:
+            for i in range(len(item)):
+                if item[i] not in digits:
+                    new_item = item.replace(item[i], '')
+                    store_df['staff_numbers'] = store_df['staff_numbers'].replace(item, new_item, regex=True)
+
+
     
         pd.to_datetime(store_df.opening_date, errors='coerce')
+
+        continents = ['Europe', 'America']
+        for item in store_df['continent']:
+            if item not in continents:
+                if item == 'eEurope' or item == 'eeEurope':
+                    new_item = 'Europe' 
+                    store_df['continent'] = store_df['continent'].replace(item, new_item, regex=True)
+                if item == 'eeAmerica':
+                    new_item = 'America'
+                    store_df['continent'] = store_df['continent'].replace(item, new_item, regex=True)
         return store_df
     
     def convert_products_weight(self, products_df):
@@ -117,7 +136,7 @@ class DataCleaning:
         return products_df
     
     def clean_orders_data(self, orders_df):
-        orders_df.dropna(inplace=True)
+        #/orders_df.dropna(inplace=True)
         pd.to_datetime(orders_df.date_uuid, format='mixed', errors='coerce')
         orders_df = orders_df.drop_duplicates()
         orders_df.drop('1', axis=1, inplace=True, errors='coerce')

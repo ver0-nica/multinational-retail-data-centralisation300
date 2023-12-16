@@ -23,23 +23,23 @@ my_connector = DatabaseConnector(my_filepath)
 #print(card_data_cleaned['card_provider'].unique())
 #my_connector.upload_to_db(card_data_cleaned, 'dim_card_details')
 
-#number_of_stores_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/number_stores'
-#number_of_stores = extractor.list_number_of_stores(number_of_stores_endpoint, header_details)
+number_of_stores_endpoint = 'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/number_stores'
+number_of_stores = extractor.list_number_of_stores(number_of_stores_endpoint, header_details)
 #print(number_of_stores)
 
-#stores_dataframe = pd.DataFrame()
-#for i in range(number_of_stores):
-    #store_endpoint_i = f'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/{i+1}'
-    #stores_dataframe_i = extractor.retrieve_stores_data(store_endpoint_i, header_details)
-    #stores_dataframe = pd.concat([stores_dataframe,stores_dataframe_i])
-    #print(i)
+stores_dataframe = pd.DataFrame()
+for i in range(number_of_stores):
+    store_endpoint_i = f'https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details/{i+1}'
+    stores_dataframe_i = extractor.retrieve_stores_data(store_endpoint_i, header_details)
+    stores_dataframe = pd.concat([stores_dataframe,stores_dataframe_i])
+    print(i)
 
 #print(stores_dataframe.info())
 
 
-#stores_dataframe_cleaned = cleaner.clean_store_data(stores_dataframe)
+stores_dataframe_cleaned = cleaner.clean_store_data(stores_dataframe)
 #print(stores_dataframe_cleaned['longitude'], stores_dataframe_cleaned['lat'], stores_dataframe_cleaned['latitude'], stores_dataframe_cleaned['staff_numbers'])
-#my_connector.upload_to_db(stores_dataframe_cleaned, 'dim_store_details')
+my_connector.upload_to_db(stores_dataframe_cleaned, 'dim_store_details')
 
 #products_address = 's3://data-handling-public/products.csv'
 #products_dataframe = extractor.extract_from_s3(products_address)
@@ -54,8 +54,8 @@ my_connector = DatabaseConnector(my_filepath)
 #print(orders_df)
 #my_connector.upload_to_db(orders_df, 'orders_table')
 
-date_address = 'https://data-handling-public.s3.eu-west-1.amazonaws.com/date_details.json'
-date_dataframe = pd.read_json(date_address)
-date_dataframe = cleaner.clean_date_data(date_dataframe)
-my_connector.upload_to_db(date_dataframe, 'dim_date_times')
+#date_address = 'https://data-handling-public.s3.eu-west-1.amazonaws.com/date_details.json'
+#date_dataframe = pd.read_json(date_address)
+#date_dataframe = cleaner.clean_date_data(date_dataframe)
+#my_connector.upload_to_db(date_dataframe, 'dim_date_times')
 
